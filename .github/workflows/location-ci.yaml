@@ -61,8 +61,8 @@ jobs:
                 -Dsonar.pullrequest.branch="${{ github.head_ref }}" \
                 -Dsonar.pullrequest.base="${{ github.base_ref }}"
             else
-              mvn -f location/pom.xml $SONAR_GOAL \
-                -Dsonar.branch.name="${{ github.head_ref }}"
+              # Fork PR: no PR/branch params — avoids SonarCloud 404 (PR key mismatch + branch analysis API).
+              mvn -f location/pom.xml $SONAR_GOAL
             fi
           else
             mvn -f location/pom.xml $SONAR_GOAL
