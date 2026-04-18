@@ -20,6 +20,10 @@ on:
 jobs:
   Build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write
+      pull-requests: write
     env:
       FROM_ORIGINAL_REPOSITORY: ${{ github.event.pull_request.head.repo.full_name == github.repository || github.ref == 'refs/heads/main' }}
     steps:
@@ -34,7 +38,7 @@ jobs:
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
         uses: jwgmeligmeyling/checkstyle-github-action@master
         with:
-          path: '**/backoffice-bff-checkstyle-result.xml'
+          path: 'backoffice-bff/backoffice-bff-checkstyle-result.xml'
       - name: Run Maven Verify
         run: mvn clean verify -f backoffice-bff
       - name: Analyze with sonar cloud
