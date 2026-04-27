@@ -49,7 +49,7 @@ jobs:
           path: "search/**/*-reports/TEST*.xml"
           reporter: java-junit
       - name: Analyze with sonar cloud
-        if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' && secrets.SONAR_TOKEN != '' }}
+        if: ${{ secrets.SONAR_TOKEN != '' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) }}
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
