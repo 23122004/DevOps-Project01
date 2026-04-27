@@ -41,18 +41,36 @@ jobs:
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -f storefront-bff
-      - name: OWASP Dependency Check
+        run: mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -f storefront-bff -Dsonar.organization=23122004 -Dsonar.projectKey=23122004_DevOps-Project01 -Dsonar.host.url=https://sonarcloud.io
+      - name: OWASP Dependency Check (attempt 1)
+        id: owasp_scan_1
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
-        uses: dependency-check/Dependency-Check_Action@main
+        continue-on-error: true
+        uses: dependency-check/Dependency-Check_Action@1.1.0
         env:
           JAVA_HOME: /opt/jdk
         with:
           project: 'yas'
           path: '.'
           format: 'HTML'
+      - name: OWASP Dependency Check (attempt 2)
+        id: owasp_scan_2
+        if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' && steps.owasp_scan_1.outcome == 'failure' }}
+        continue-on-error: true
+        uses: dependency-check/Dependency-Check_Action@1.1.0
+        env:
+          JAVA_HOME: /opt/jdk
+        with:
+          project: 'yas'
+          path: '.'
+          format: 'HTML'
+      - name: Fail when OWASP scan retries are exhausted
+        if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' && steps.owasp_scan_1.outcome == 'failure' && steps.owasp_scan_2.outcome == 'failure' }}
+        run: |
+          echo "OWASP Dependency Check failed after 2 attempts."
+          exit 1
       - name: Upload OWASP Dependency Check results
-        if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
+        if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' && (success() || failure()) }}
         uses: actions/upload-artifact@master
         with:
           name: OWASP Dependency Check Report
