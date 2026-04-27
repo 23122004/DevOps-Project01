@@ -26,6 +26,7 @@ jobs:
       pull-requests: write
     env:
       FROM_ORIGINAL_REPOSITORY: ${{ github.event.pull_request.head.repo.full_name == github.repository || github.ref == 'refs/heads/main' }}
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -49,9 +50,9 @@ jobs:
           path: "location/**/*-reports/TEST*.xml"
           reporter: java-junit
       - name: Analyze with sonar cloud
-        if: ${{ secrets.SONAR_TOKEN != '' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) }}
+        if: ${{ env.SONAR_TOKEN != '' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) }}
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_TOKEN: ${{ env.SONAR_TOKEN }}
         run: |
           SONAR_GOAL="org.sonarsource.scanner.maven:sonar-maven-plugin:3.11.0.3922:sonar"
           if [ "${{ github.event_name }}" = "pull_request" ]; then
