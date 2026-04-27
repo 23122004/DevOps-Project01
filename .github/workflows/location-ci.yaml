@@ -53,7 +53,7 @@ jobs:
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -pl location -am org.sonarsource.scanner.maven:sonar-maven-plugin:3.11.0.3922:sonar
+        run: mvn -pl location -am org.sonarsource.scanner.maven:sonar-maven-plugin:3.11.0.3922:sonar -Dsonar.organization=23122004 -Dsonar.projectKey=23122004_DevOps-Project01 -Dsonar.host.url=https://sonarcloud.io
       - name: OWASP Dependency Check
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
         uses: dependency-check/Dependency-Check_Action@main
