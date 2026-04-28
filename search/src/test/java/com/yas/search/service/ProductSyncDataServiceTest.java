@@ -2,6 +2,7 @@ package com.yas.search.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -53,12 +54,9 @@ class ProductSyncDataServiceTest {
 
     private void mockProductThumbnailVmsByUri() {
 
-        final URI url = UriComponentsBuilder.fromUriString(PRODUCT_URL)
-            .path("/storefront/products-es/{id}").buildAndExpand(ID).toUri();
-
         when(serviceUrlConfig.product()).thenReturn(PRODUCT_URL);
         when(restClient.get()).thenReturn(requestHeadersUriSpec);
-        when(requestHeadersUriSpec.uri(url)).thenReturn(requestHeadersUriSpec);
+        when(requestHeadersUriSpec.uri(any(URI.class))).thenReturn(requestHeadersUriSpec);
         when(requestHeadersUriSpec.retrieve()).thenReturn(responseSpec);
         when(responseSpec.body(ProductEsDetailVm.class))
             .thenReturn(getProductThumbnailVms());
@@ -153,12 +151,9 @@ class ProductSyncDataServiceTest {
             List.of("Color: Black", "Storage: 128GB", "RAM: 6GB")
         );
 
-        URI url = UriComponentsBuilder.fromUriString(PRODUCT_URL)
-            .path("/storefront/products-es/{id}").buildAndExpand(ID).toUri();
-
         when(serviceUrlConfig.product()).thenReturn(PRODUCT_URL);
         when(restClient.get()).thenReturn(requestHeadersUriSpec);
-        when(requestHeadersUriSpec.uri(url)).thenReturn(requestHeadersUriSpec);
+        when(requestHeadersUriSpec.uri(any(URI.class))).thenReturn(requestHeadersUriSpec);
         when(requestHeadersUriSpec.retrieve()).thenReturn(responseSpec);
         when(responseSpec.body(ProductEsDetailVm.class))
             .thenReturn(productEsDetailVm);

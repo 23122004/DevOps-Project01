@@ -53,7 +53,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 @Import(KafkaConfiguration.class)
 @PropertySource("classpath:application.properties")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class ProductCdcConsumerTest extends CdcConsumerTest<ProductMsgKey, ProductCdcMessage> {
+public class ProductCdcConsumerIT extends CdcConsumerTest<ProductMsgKey, ProductCdcMessage> {
     public static final String STOREFRONT_PRODUCTS_PATH = "/storefront/products/detail/{id}";
     private static final String PRODUCT_NAME_UPDATE = "IPhone 14 Pro New";
     @Autowired
