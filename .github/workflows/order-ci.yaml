@@ -87,6 +87,13 @@ jobs:
         with:
           name: OWASP Dependency Check Report
           path: ${{github.workspace}}/reports
+      - name: Snyk Dependency Scan
+        if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' && secrets.SNYK_TOKEN != '' }}
+        uses: snyk/actions/maven@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --file=order/pom.xml --severity-threshold=high
       - name: Add coverage report to PR
         uses: madrapps/jacoco-report@v1.6.1
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}

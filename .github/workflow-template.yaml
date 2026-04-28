@@ -64,6 +64,13 @@ jobs:
         with:
           name: OWASP Dependency Check Report
           path: ${{github.workspace}}/reports
+      - name: Snyk Dependency Scan
+        if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' && secrets.SNYK_TOKEN != '' }}
+        uses: snyk/actions/maven@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --file={{SERVICE_NAME}}/pom.xml --severity-threshold=high
       - name: Analyze with sonar cloud
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
         env:
