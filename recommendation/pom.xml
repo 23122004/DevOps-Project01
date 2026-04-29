@@ -104,6 +104,27 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <!-- Excludes Docker/Testcontainers integration tests requiring a running Docker daemon -->
+                        <exclude>**/ProductVectorRepositoryTest.java</exclude>
+                        <exclude>**/BaseVectorRepositoryTest.java</exclude>
+                        <exclude>**/ProductCdcConsumerTest.java</exclude>
+                        <exclude>**/VectorQueryTest.java</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
     <repositories>

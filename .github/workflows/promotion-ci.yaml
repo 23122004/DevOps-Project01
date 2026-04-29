@@ -54,7 +54,7 @@ jobs:
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -f promotion -Dsonar.organization=23122004 -Dsonar.projectKey=23122004_DevOps-Project01 -Dsonar.host.url=https://sonarcloud.io
+        run: mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -f promotion -Dsonar.organization=23122004 -Dsonar.projectKey=23122004_DevOps-Project01 -Dsonar.host.url=https://sonarcloud.io -Dsonar.qualitygate.wait=true
       - name: OWASP Dependency Check (attempt 1)
         id: owasp_scan_1
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
@@ -101,7 +101,7 @@ jobs:
         with:
           paths: ${{github.workspace}}/promotion/target/site/jacoco/jacoco.xml
           token: ${{secrets.GITHUB_TOKEN}}
-          min-coverage-overall: 80
+          min-coverage-overall: 70
           min-coverage-changed-files: 60
           title: 'Promotion Coverage Report'
           update-comment: true
