@@ -53,8 +53,6 @@ class JdbcVectorServiceTest {
         Document doc = new Document("content");
         List<Document> expectedDocs = List.of(doc);
 
-        when(embeddingSearchConfiguration.similarityThreshold()).thenReturn(0.5);
-        when(embeddingSearchConfiguration.topK()).thenReturn(5);
         when(jdbcTemplate.query(anyString(), any(PreparedStatementSetter.class), any(DocumentRowMapper.class)))
             .thenReturn(expectedDocs);
 

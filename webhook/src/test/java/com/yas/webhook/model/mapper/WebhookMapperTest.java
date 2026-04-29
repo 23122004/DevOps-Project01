@@ -26,7 +26,12 @@ class WebhookMapperTest {
 
     @Test
     void toWebhookVm_shouldMapCorrectly() {
-        Webhook webhook = Webhook.builder().id(1L).payloadUrl("url").isActive(true).secret("secret").build();
+        Webhook webhook = new Webhook();
+        webhook.setId(1L);
+        webhook.setPayloadUrl("url");
+        webhook.setIsActive(true);
+        webhook.setSecret("secret");
+
         WebhookVm vm = webhookMapper.toWebhookVm(webhook);
         assertThat(vm.getId()).isEqualTo(1L);
         assertThat(vm.getPayloadUrl()).isEqualTo("url");
@@ -35,15 +40,19 @@ class WebhookMapperTest {
 
     @Test
     void toWebhookEventVms_shouldMapList() {
-        WebhookEvent event = WebhookEvent.builder().eventId("event1").build();
+        WebhookEvent event = new WebhookEvent();
+        event.setEventId(1L);
+
         List<EventVm> vms = webhookMapper.toWebhookEventVms(List.of(event));
         assertThat(vms).hasSize(1);
-        assertThat(vms.getFirst().getId()).isEqualTo("event1");
+        assertThat(vms.getFirst().getId()).isEqualTo(1L);
     }
 
     @Test
     void toWebhookListGetVm_shouldMapPage() {
-        Webhook webhook = Webhook.builder().id(1L).build();
+        Webhook webhook = new Webhook();
+        webhook.setId(1L);
+
         Page<Webhook> page = new PageImpl<>(List.of(webhook), PageRequest.of(0, 10), 1);
         WebhookListGetVm result = webhookMapper.toWebhookListGetVm(page, 0, 10);
         assertThat(result.getWebhooks()).hasSize(1);
@@ -52,7 +61,10 @@ class WebhookMapperTest {
 
     @Test
     void toWebhookDetailVm_shouldMapDetail() {
-        Webhook webhook = Webhook.builder().id(1L).payloadUrl("url").build();
+        Webhook webhook = new Webhook();
+        webhook.setId(1L);
+        webhook.setPayloadUrl("url");
+
         WebhookDetailVm result = webhookMapper.toWebhookDetailVm(webhook);
         assertThat(result.getId()).isEqualTo(1L);
         assertThat(result.getPayloadUrl()).isEqualTo("url");

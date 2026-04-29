@@ -59,7 +59,8 @@ class VectorQueryUnitTest {
 
     @Test
     void toResult_whenMetadataIsNull_shouldFilterOut() {
-        Document doc = new Document("content", null);
+        Document doc = org.mockito.Mockito.mock(Document.class);
+        when(doc.getMetadata()).thenReturn(null);
         List<Document> docs = List.of(doc);
 
         List<RelatedProductVm> result = vectorQuery.toResult(docs);

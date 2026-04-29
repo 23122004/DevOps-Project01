@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.yas.promotion.model.Promotion;
 import com.yas.promotion.model.PromotionApply;
-import com.yas.promotion.model.enums.ApplyTo;
+import com.yas.promotion.model.enumeration.ApplyTo;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 

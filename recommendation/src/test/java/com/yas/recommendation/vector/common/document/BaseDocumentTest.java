@@ -8,9 +8,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.document.id.IdGenerator;
 
+import com.yas.recommendation.vector.common.formatter.DefaultDocumentFormatter;
+
 class BaseDocumentTest {
 
-    @DocumentMetadata(docIdPrefix = "TEST", contentFormat = "{name}")
+    @DocumentMetadata(docIdPrefix = "TEST", contentFormat = "{name}", documentFormatter = DefaultDocumentFormatter.class)
     private static class TestDocument extends BaseDocument {}
 
     private static class InvalidDocument extends BaseDocument {}
