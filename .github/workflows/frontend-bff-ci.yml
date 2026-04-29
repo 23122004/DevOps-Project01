@@ -1,0 +1,138 @@
+name: Frontend and BFF CI
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "storefront/**"
+      - "backoffice/**"
+      - "storefront-bff/**"
+      - "backoffice-bff/**"
+      - ".github/workflows/frontend-bff-ci.yml"
+  pull_request:
+    branches: ["main"]
+    paths:
+      - "storefront/**"
+      - "backoffice/**"
+      - "storefront-bff/**"
+      - "backoffice-bff/**"
+      - ".github/workflows/frontend-bff-ci.yml"
+
+permissions:
+  contents: read
+
+env:
+  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+  SONAR_HOST_URL: https://sonarcloud.io
+
+jobs:
+  frontend-ci:
+    name: Frontend CI - ${{ matrix.service.dir }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        service:
+          - dir: storefront
+            sonar_project_key: yas-storefront
+          - dir: backoffice
+            sonar_project_key: yas-backoffice
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: "${{ matrix.service.dir }}/package-lock.json"
+
+      - name: Install dependencies
+        working-directory: ${{ matrix.service.dir }}
+        run: npm install
+
+      - name: Install Vitest coverage runner
+        working-directory: ${{ matrix.service.dir }}
+        run: npm install --no-save vitest@4.1.5 @vitest/coverage-v8@4.1.5
+
+      - name: Run tests with coverage
+        working-directory: ${{ matrix.service.dir }}
+        run: npx vitest run --coverage --coverage.reporter=lcov
+      
+      # Step quét bảo mật thư viện (Cần SNYK_TOKEN trong Secrets)
+      - name: Snyk test
+        uses: snyk/actions/node@master # Hoặc maven@master cho bff
+        continue-on-error: true # Đặt true để vẫn chạy tiếp các bước sau lấy report
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+      # Step quét lộ mật khẩu (Gitleaks)
+      - name: Gitleaks scan
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: SonarCloud scan
+        uses: SonarSource/sonarqube-scan-action@v5
+        with:
+          projectBaseDir: ${{ matrix.service.dir }}
+          args: >
+            -Dsonar.projectKey=${{ matrix.service.sonar_project_key }}
+            -Dsonar.organization=23122004
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+
+      - name: SonarCloud quality gate
+        uses: SonarSource/sonarqube-quality-gate-action@v1.2.0
+        timeout-minutes: 5
+        with:
+          scanMetadataReportFile: ${{ matrix.service.dir }}/.scannerwork/report-task.txt
+
+  bff-ci:
+    name: BFF CI - ${{ matrix.service.dir }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        service:
+          - dir: storefront-bff
+            sonar_project_key: yas-storefront-bff
+          - dir: backoffice-bff
+            sonar_project_key: yas-backoffice-bff
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+
+      - name: Run unit tests
+        working-directory: ${{ matrix.service.dir }}
+        run: |
+          chmod +x mvnw || true
+          ./mvnw clean test
+
+      - name: Generate JaCoCo XML report
+        working-directory: ${{ matrix.service.dir }}
+        run: |
+          chmod +x mvnw || true
+          ./mvnw jacoco:report
+
+      - name: SonarCloud scan
+        uses: SonarSource/sonarqube-scan-action@v5
+        with:
+          projectBaseDir: ${{ matrix.service.dir }}
+          args: >
+            -Dsonar.projectKey=${{ matrix.service.sonar_project_key }}
+            -Dsonar.organization=23122004
+            -Dsonar.java.binaries=target/classes
+            -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+
+      - name: SonarCloud quality gate
+        uses: SonarSource/sonarqube-quality-gate-action@v1.2.0
+        timeout-minutes: 5
+        with:
+          scanMetadataReportFile: ${{ matrix.service.dir }}/.scannerwork/report-task.txt
