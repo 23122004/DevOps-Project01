@@ -55,33 +55,27 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -f product -Dsonar.organization=23122004 -Dsonar.projectKey=23122004_DevOps-Project01 -Dsonar.host.url=https://sonarcloud.io
-      - name: OWASP Dependency Check (attempt 1)
-        id: owasp_scan_1
+      - name: Cache OWASP Dependency Check data
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
-        continue-on-error: true
-        uses: dependency-check/Dependency-Check_Action@1.1.0
-        env:
-          JAVA_HOME: /opt/jdk
+        uses: actions/cache@v4
         with:
-          project: 'yas'
-          path: '.'
-          format: 'HTML'
-      - name: OWASP Dependency Check (attempt 2)
-        id: owasp_scan_2
-        if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' && steps.owasp_scan_1.outcome == 'failure' }}
-        continue-on-error: true
-        uses: dependency-check/Dependency-Check_Action@1.1.0
-        env:
-          JAVA_HOME: /opt/jdk
-        with:
-          project: 'yas'
-          path: '.'
-          format: 'HTML'
-      - name: Fail when OWASP scan retries are exhausted
-        if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' && steps.owasp_scan_1.outcome == 'failure' && steps.owasp_scan_2.outcome == 'failure' }}
+          path: .dependency-check-data
+          key: ${{ runner.os }}-dependency-check-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-dependency-check-
+      - name: OWASP Dependency Check
+        if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
         run: |
-          echo "OWASP Dependency Check failed after 2 attempts."
-          exit 1
+          mkdir -p .dependency-check-data reports
+          docker run --rm \
+            -v "${{ github.workspace }}:/github/workspace" \
+            -v "${{ github.workspace }}/.dependency-check-data:/usr/share/dependency-check/data" \
+            owasp/dependency-check-action:latest \
+            --project "yas" \
+            --scan "/github/workspace" \
+            --format "HTML" \
+            --out "/github/workspace/reports" \
+            --nvdDatafeed "https://dependency-check.github.io/DependencyCheck_Builder/nvd_cache/"
       - name: Upload OWASP Dependency Check results
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' && (success() || failure()) }}
         uses: actions/upload-artifact@master
