@@ -384,10 +384,11 @@ class PromotionServiceTest {
             .brandId(1L).build();
         promotionInUse.setPromotionApplies(List.of(promotionApply));
 
-        promotionInUse = promotionRepository.save(promotionInUse);
+        Promotion savedPromotion = promotionRepository.save(promotionInUse);
+        Long savedPromotionId = savedPromotion.getId();
 
         PromotionUsage usage = PromotionUsage.builder()
-            .promotion(promotionInUse)
+            .promotion(savedPromotion)
             .userId("user1")
             .productId(1L)
             .orderId(1L)
@@ -395,8 +396,8 @@ class PromotionServiceTest {
         promotionUsageRepository.save(usage);
 
         BadRequestException exception = assertThrows(BadRequestException.class,
-            () -> promotionService.deletePromotion(promotionInUse.getId()));
-        assertEquals(String.format(Constants.ErrorCode.PROMOTION_IN_USE_ERROR_MESSAGE, promotionInUse.getId()),
+            () -> promotionService.deletePromotion(savedPromotionId));
+        assertEquals(String.format(Constants.ErrorCode.PROMOTION_IN_USE_ERROR_MESSAGE, savedPromotionId),
             exception.getMessage());
     }
 
