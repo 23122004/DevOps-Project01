@@ -142,6 +142,7 @@ class PromotionServiceTest {
 
     @AfterEach
     void tearDown() {
+        promotionUsageRepository.deleteAll();
         promotionRepository.deleteAll();
     }
 
@@ -397,7 +398,7 @@ class PromotionServiceTest {
 
         BadRequestException exception = assertThrows(BadRequestException.class,
             () -> promotionService.deletePromotion(savedPromotionId));
-        assertEquals(String.format(Constants.ErrorCode.PROMOTION_IN_USE_ERROR_MESSAGE, savedPromotionId),
+        assertEquals(String.format("Can't delete promotion %s because it is in use", savedPromotionId),
             exception.getMessage());
     }
 
@@ -451,7 +452,10 @@ class PromotionServiceTest {
 
     @Test
     void updateUsagePromotion_WhenValidData_UpdatesSuccessfully() {
-        setUpSecurityContext("test-user");
+        var jwt = org.mockito.Mockito.mock(org.springframework.security.oauth2.jwt.Jwt.class);
+        org.mockito.Mockito.when(jwt.getSubject()).thenReturn("test-user");
+        var authentication = new org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken(jwt);
+        org.springframework.security.core.context.SecurityContextHolder.getContext().setAuthentication(authentication);
 
         Promotion promotion = Promotion.builder()
             .name("Usage Test Promotion")
@@ -482,7 +486,10 @@ class PromotionServiceTest {
 
     @Test
     void updateUsagePromotion_WhenPromotionNotFound_ThrowsNotFoundException() {
-        setUpSecurityContext("test-user");
+        var jwt = org.mockito.Mockito.mock(org.springframework.security.oauth2.jwt.Jwt.class);
+        org.mockito.Mockito.when(jwt.getSubject()).thenReturn("test-user");
+        var authentication = new org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken(jwt);
+        org.springframework.security.core.context.SecurityContextHolder.getContext().setAuthentication(authentication);
 
         List<PromotionUsageVm> usageVms = List.of(
             new PromotionUsageVm("non-existent-code", 1L, "test-user", 100L)
