@@ -34,7 +34,9 @@ describe('ProductService', () => {
 
     const result = await getFeaturedProducts(2);
 
-    expect(apiClientService.get).toHaveBeenCalledWith('/api/product/storefront/products/featured?pageNo=2');
+    expect(apiClientService.get).toHaveBeenCalledWith(
+      '/api/product/storefront/products/featured?pageNo=2'
+    );
     expect(result).toEqual(payload);
   });
 
@@ -81,7 +83,9 @@ describe('ProductService', () => {
 
     const result = await getProductByMultiParams('keyword=abc&page=1');
 
-    expect(apiClientService.get).toHaveBeenCalledWith('/api/product/storefront/products?keyword=abc&page=1');
+    expect(apiClientService.get).toHaveBeenCalledWith(
+      '/api/product/storefront/products?keyword=abc&page=1'
+    );
     expect(result).toEqual(payload);
   });
 
@@ -173,5 +177,4 @@ describe('ProductService', () => {
     expect(result).toEqual([{ id: 2 }]);
     expect(logSpy).toHaveBeenCalledWith('/api/product/storefront/product-option-values/7');
   });
-
 });

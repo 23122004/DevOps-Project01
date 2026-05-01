@@ -3,7 +3,7 @@ import * as orderUtil from './orderUtil';
 
 import { EDeliveryMethod } from '@/modules/order/models/EDeliveryMethod';
 import { EDeliveryStatus } from '@/modules/order/models/EDeliveryStatus';
-import { EOrderStatus } from    '@/modules/order/models/EOrderStatus';
+import { EOrderStatus } from '@/modules/order/models/EOrderStatus';
 
 describe('Test orderUtil', () => {
   test('getOrderStatusTitle trả về đúng text', () => {

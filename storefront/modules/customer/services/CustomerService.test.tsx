@@ -82,7 +82,10 @@ describe('CustomerService', () => {
 
     const result = await chooseDefaultAddress(3);
 
-    expect(apiClientService.put).toHaveBeenCalledWith('/api/customer/storefront/user-address/3', null);
+    expect(apiClientService.put).toHaveBeenCalledWith(
+      '/api/customer/storefront/user-address/3',
+      null
+    );
     expect(result).toBe(response);
   });
 });

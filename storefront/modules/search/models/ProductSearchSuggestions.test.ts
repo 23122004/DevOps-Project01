@@ -14,11 +14,7 @@ describe('ProductSearchSuggestions type', () => {
 
   it('should create a valid ProductSearchSuggestions object with multiple suggestions', () => {
     const suggestions: ProductSearchSuggestions = {
-      productNames: [
-        { name: 'Nike Shoes' },
-        { name: 'Adidas Running' },
-        { name: 'Puma Classic' },
-      ],
+      productNames: [{ name: 'Nike Shoes' }, { name: 'Adidas Running' }, { name: 'Puma Classic' }],
     };
 
     expect(suggestions.productNames).toHaveLength(3);
@@ -27,11 +23,7 @@ describe('ProductSearchSuggestions type', () => {
 
   it('should allow accessing individual product names', () => {
     const suggestions: ProductSearchSuggestions = {
-      productNames: [
-        { name: 'Product A' },
-        { name: 'Product B' },
-        { name: 'Product C' },
-      ],
+      productNames: [{ name: 'Product A' }, { name: 'Product B' }, { name: 'Product C' }],
     };
 
     expect(suggestions.productNames[0].name).toBe('Product A');
@@ -48,20 +40,17 @@ describe('ProductSearchSuggestions type', () => {
       ],
     };
 
-    const nikeSuggestions = suggestions.productNames.filter(p => p.name.includes('Nike'));
+    const nikeSuggestions = suggestions.productNames.filter((p) => p.name.includes('Nike'));
     expect(nikeSuggestions).toHaveLength(2);
     expect(nikeSuggestions[0].name).toBe('Nike Air Force');
   });
 
   it('should allow mapping product names to uppercase', () => {
     const suggestions: ProductSearchSuggestions = {
-      productNames: [
-        { name: 'product one' },
-        { name: 'product two' },
-      ],
+      productNames: [{ name: 'product one' }, { name: 'product two' }],
     };
 
-    const uppercased = suggestions.productNames.map(p => ({
+    const uppercased = suggestions.productNames.map((p) => ({
       name: p.name.toUpperCase(),
     }));
 
@@ -71,14 +60,11 @@ describe('ProductSearchSuggestions type', () => {
 
   it('should allow checking if a product exists in suggestions', () => {
     const suggestions: ProductSearchSuggestions = {
-      productNames: [
-        { name: 'Existing Product' },
-        { name: 'Another Product' },
-      ],
+      productNames: [{ name: 'Existing Product' }, { name: 'Another Product' }],
     };
 
-    const hasProduct = suggestions.productNames.some(p => p.name === 'Existing Product');
-    const notExists = suggestions.productNames.some(p => p.name === 'Missing Product');
+    const hasProduct = suggestions.productNames.some((p) => p.name === 'Existing Product');
+    const notExists = suggestions.productNames.some((p) => p.name === 'Missing Product');
 
     expect(hasProduct).toBe(true);
     expect(notExists).toBe(false);
@@ -86,11 +72,7 @@ describe('ProductSearchSuggestions type', () => {
 
   it('should allow sorting product suggestions alphabetically', () => {
     const suggestions: ProductSearchSuggestions = {
-      productNames: [
-        { name: 'Zebra' },
-        { name: 'Apple' },
-        { name: 'Mango' },
-      ],
+      productNames: [{ name: 'Zebra' }, { name: 'Apple' }, { name: 'Mango' }],
     };
 
     const sorted = [...suggestions.productNames].sort((a, b) => a.name.localeCompare(b.name));
@@ -114,17 +96,13 @@ describe('ProductSearchSuggestions type', () => {
 
   it('should allow removing a product suggestion', () => {
     const suggestions: ProductSearchSuggestions = {
-      productNames: [
-        { name: 'Product 1' },
-        { name: 'Product 2' },
-        { name: 'Product 3' },
-      ],
+      productNames: [{ name: 'Product 1' }, { name: 'Product 2' }, { name: 'Product 3' }],
     };
 
-    suggestions.productNames = suggestions.productNames.filter(p => p.name !== 'Product 2');
+    suggestions.productNames = suggestions.productNames.filter((p) => p.name !== 'Product 2');
 
     expect(suggestions.productNames).toHaveLength(2);
-    expect(suggestions.productNames.some(p => p.name === 'Product 2')).toBe(false);
+    expect(suggestions.productNames.some((p) => p.name === 'Product 2')).toBe(false);
   });
 
   it('should handle large number of suggestions', () => {
@@ -143,15 +121,11 @@ describe('ProductSearchSuggestions type', () => {
 
   it('should allow duplicates in product suggestions', () => {
     const suggestions: ProductSearchSuggestions = {
-      productNames: [
-        { name: 'Duplicate' },
-        { name: 'Duplicate' },
-        { name: 'Unique' },
-      ],
+      productNames: [{ name: 'Duplicate' }, { name: 'Duplicate' }, { name: 'Unique' }],
     };
 
     expect(suggestions.productNames).toHaveLength(3);
-    const duplicates = suggestions.productNames.filter(p => p.name === 'Duplicate');
+    const duplicates = suggestions.productNames.filter((p) => p.name === 'Duplicate');
     expect(duplicates).toHaveLength(2);
   });
 });

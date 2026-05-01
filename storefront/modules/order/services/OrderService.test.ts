@@ -41,7 +41,10 @@ describe('OrderService', () => {
   });
 
   test('getMyOrders should include nullable orderStatus in URL', async () => {
-    const response = { status: 200, json: vi.fn().mockResolvedValue([{ id: 9 }]) } as unknown as Response;
+    const response = {
+      status: 200,
+      json: vi.fn().mockResolvedValue([{ id: 9 }]),
+    } as unknown as Response;
     vi.mocked(apiClientService.get).mockResolvedValue(response);
 
     const result = await getMyOrders('product-a', EOrderStatus.PENDING);

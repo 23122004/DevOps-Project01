@@ -77,7 +77,7 @@ describe('ProductSearchResult type', () => {
   it('should handle special characters in name and slug', () => {
     const result: ProductSearchResult = {
       id: 5,
-      name: "Product with Special Characters & Symbols!",
+      name: 'Product with Special Characters & Symbols!',
       slug: 'product-with-special-characters-symbols',
       thumbnailId: 105,
       price: 59.99,
@@ -118,7 +118,7 @@ describe('ProductSearchResult type', () => {
       { id: 3, name: 'Expensive', slug: 'expensive', thumbnailId: 3, price: 200 },
     ];
 
-    const inRange = results.filter(r => r.price >= 30 && r.price <= 100);
+    const inRange = results.filter((r) => r.price >= 30 && r.price <= 100);
     expect(inRange).toHaveLength(1);
     expect(inRange[0].name).toBe('Mid');
   });

@@ -23,7 +23,10 @@ describe('PaymentPaypalService', () => {
     const request = { amount: 10 };
     const result = await initPaymentPaypal(request as never);
 
-    expect(apiClientService.post).toHaveBeenCalledWith('/api/payment/init', JSON.stringify(request));
+    expect(apiClientService.post).toHaveBeenCalledWith(
+      '/api/payment/init',
+      JSON.stringify(request)
+    );
     expect(result).toEqual({ orderId: 'o1' });
   });
 

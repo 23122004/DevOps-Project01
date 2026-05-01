@@ -213,7 +213,7 @@ describe('SearchParams type', () => {
       },
     ];
 
-    scenarios.forEach(scenario => {
+    scenarios.forEach((scenario) => {
       const params: SearchParams = scenario;
       expect(params.keyword).toBeTruthy();
     });

@@ -117,9 +117,9 @@ describe('SearchProductResponse type', () => {
       isLast: false,
       aggregations: {
         brand: {
-          'Nike': 20,
-          'Adidas': 15,
-          'Puma': 15,
+          Nike: 20,
+          Adidas: 15,
+          Puma: 15,
         },
       },
     };
@@ -139,9 +139,9 @@ describe('SearchProductResponse type', () => {
       isLast: false,
       aggregations: {
         category: {
-          'Shoes': 40,
-          'Apparel': 35,
-          'Accessories': 25,
+          Shoes: 40,
+          Apparel: 35,
+          Accessories: 25,
         },
       },
     };
@@ -159,9 +159,9 @@ describe('SearchProductResponse type', () => {
       totalPages: 3,
       isLast: false,
       aggregations: {
-        brand: { 'Nike': 20, 'Adidas': 30 },
-        category: { 'Shoes': 50 },
-        size: { 'M': 25, 'L': 25 },
+        brand: { Nike: 20, Adidas: 30 },
+        category: { Shoes: 50 },
+        size: { M: 25, L: 25 },
       },
     };
 
@@ -188,13 +188,16 @@ describe('SearchProductResponse type', () => {
       aggregations: {},
     };
 
-    const hasMoreProducts = response.pageNo < response.totalPages || response.products.length === response.pageSize;
+    const hasMoreProducts =
+      response.pageNo < response.totalPages || response.products.length === response.pageSize;
     expect(hasMoreProducts).toBe(true);
   });
 
   it('should handle single product in response', () => {
     const response: SearchProductResponse = {
-      products: [{ id: 999, name: 'Unique Product', slug: 'unique', thumbnailId: 999, price: 999.99 }],
+      products: [
+        { id: 999, name: 'Unique Product', slug: 'unique', thumbnailId: 999, price: 999.99 },
+      ],
       pageNo: 1,
       pageSize: 20,
       totalElements: 1,
@@ -246,7 +249,7 @@ describe('SearchProductResponse type', () => {
       aggregations: {},
     };
 
-    const affordable = response.products.filter(p => p.price <= 60);
+    const affordable = response.products.filter((p) => p.price <= 60);
     expect(affordable).toHaveLength(2);
   });
 

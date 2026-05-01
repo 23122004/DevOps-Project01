@@ -10,9 +10,9 @@ describe('Aggregations type', () => {
   it('should allow aggregations with brand data', () => {
     const aggregations: Aggregations = {
       brand: {
-        'Nike': 25,
-        'Adidas': 18,
-        'Puma': 12,
+        Nike: 25,
+        Adidas: 18,
+        Puma: 12,
       },
     };
     expect(aggregations.brand).toBeDefined();
@@ -24,9 +24,9 @@ describe('Aggregations type', () => {
   it('should allow aggregations with category data', () => {
     const aggregations: Aggregations = {
       category: {
-        'Electronics': 45,
-        'Clothing': 32,
-        'Books': 18,
+        Electronics: 45,
+        Clothing: 32,
+        Books: 18,
       },
     };
     expect(aggregations.category).toBeDefined();
@@ -35,8 +35,8 @@ describe('Aggregations type', () => {
 
   it('should allow aggregations with multiple facets', () => {
     const aggregations: Aggregations = {
-      brand: { 'Nike': 25 },
-      category: { 'Shoes': 18 },
+      brand: { Nike: 25 },
+      category: { Shoes: 18 },
       price: { '100': 10 },
     };
     expect(Object.keys(aggregations)).toHaveLength(3);
@@ -61,8 +61,8 @@ describe('Aggregations type', () => {
   it('should allow aggregations with zero counts', () => {
     const aggregations: Aggregations = {
       brand: {
-        'LimitedBrand': 0,
-        'PopularBrand': 50,
+        LimitedBrand: 0,
+        PopularBrand: 50,
       },
     };
     expect(aggregations.brand['LimitedBrand']).toBe(0);
@@ -72,9 +72,9 @@ describe('Aggregations type', () => {
   it('should allow dynamic aggregations with any string keys', () => {
     const aggregations: Aggregations = {
       customFacet: {
-        'value1': 100,
-        'value2': 200,
-        'value3': 300,
+        value1: 100,
+        value2: 200,
+        value3: 300,
       },
     };
     expect(aggregations.customFacet['value1']).toBe(100);

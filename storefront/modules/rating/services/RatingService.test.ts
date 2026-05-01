@@ -55,7 +55,9 @@ describe('RatingService', () => {
 
     const result = await getAverageStarByProductId(12);
 
-    expect(apiClientService.get).toHaveBeenCalledWith('/api/rating/storefront/ratings/product/12/average-star');
+    expect(apiClientService.get).toHaveBeenCalledWith(
+      '/api/rating/storefront/ratings/product/12/average-star'
+    );
     expect(result).toBe(4.5);
   });
 });

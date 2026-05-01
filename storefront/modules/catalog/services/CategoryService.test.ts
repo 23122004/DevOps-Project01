@@ -40,7 +40,9 @@ describe('CategoryService', () => {
 
     const result = await getCategoriesSuggestions();
 
-    expect(apiClientService.get).toHaveBeenCalledWith('/api/product/storefront/categories/suggestions');
+    expect(apiClientService.get).toHaveBeenCalledWith(
+      '/api/product/storefront/categories/suggestions'
+    );
     expect(result).toEqual(['Phone', 'Laptop']);
   });
 });

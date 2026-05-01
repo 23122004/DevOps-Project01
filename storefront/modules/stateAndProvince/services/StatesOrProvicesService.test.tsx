@@ -21,7 +21,9 @@ describe('StatesOrProvicesService', () => {
 
     const result = await getStatesOrProvinces(84);
 
-    expect(apiClientService.get).toHaveBeenCalledWith('/api/location/storefront/state-or-provinces/84');
+    expect(apiClientService.get).toHaveBeenCalledWith(
+      '/api/location/storefront/state-or-provinces/84'
+    );
     expect(result).toEqual([{ id: 1 }]);
   });
 });

@@ -35,9 +35,9 @@ describe('SearchSuggestion type', () => {
       name: "Product & Company's Brand!",
     };
 
-    expect(suggestion.name).toContain("&");
+    expect(suggestion.name).toContain('&');
     expect(suggestion.name).toContain("'");
-    expect(suggestion.name).toContain("!");
+    expect(suggestion.name).toContain('!');
   });
 
   it('should allow very long names', () => {
@@ -74,29 +74,23 @@ describe('SearchSuggestion type', () => {
       { name: 'Nike Jordans' },
     ];
 
-    const nikes = suggestions.filter(s => s.name.startsWith('Nike'));
+    const nikes = suggestions.filter((s) => s.name.startsWith('Nike'));
     expect(nikes).toHaveLength(3);
   });
 
   it('should allow mapping suggestions to display format', () => {
-    const suggestions: SearchSuggestion[] = [
-      { name: 'Product A' },
-      { name: 'Product B' },
-    ];
+    const suggestions: SearchSuggestion[] = [{ name: 'Product A' }, { name: 'Product B' }];
 
-    const displayNames = suggestions.map(s => s.name.toUpperCase());
+    const displayNames = suggestions.map((s) => s.name.toUpperCase());
     expect(displayNames[0]).toBe('PRODUCT A');
     expect(displayNames[1]).toBe('PRODUCT B');
   });
 
   it('should allow checking if suggestion exists', () => {
-    const suggestions: SearchSuggestion[] = [
-      { name: 'Existing' },
-      { name: 'Also Exists' },
-    ];
+    const suggestions: SearchSuggestion[] = [{ name: 'Existing' }, { name: 'Also Exists' }];
 
-    const exists = suggestions.some(s => s.name === 'Existing');
-    const notExists = suggestions.some(s => s.name === 'Not There');
+    const exists = suggestions.some((s) => s.name === 'Existing');
+    const notExists = suggestions.some((s) => s.name === 'Not There');
 
     expect(exists).toBe(true);
     expect(notExists).toBe(false);
