@@ -70,7 +70,7 @@ class TaxClassServiceTest {
 
     @Test
     void create_whenNameNotExists_shouldSaveAndReturn() {
-        TaxClassPostVm postVm = new TaxClassPostVm("New Class");
+        TaxClassPostVm postVm = new TaxClassPostVm("new-class", "New Class");
         when(taxClassRepository.existsByName("New Class")).thenReturn(false);
         
         TaxClass taxClass = new TaxClass();
@@ -80,13 +80,13 @@ class TaxClassServiceTest {
 
         TaxClass result = taxClassService.create(postVm);
 
-        assertThat(result.name()).isEqualTo("New Class");
+        assertThat(result.getName()).isEqualTo("New Class");
         verify(taxClassRepository).save(any(TaxClass.class));
     }
 
     @Test
     void create_whenNameExists_shouldThrowDuplicatedException() {
-        TaxClassPostVm postVm = new TaxClassPostVm("Existing Class");
+        TaxClassPostVm postVm = new TaxClassPostVm("existing-class", "Existing Class");
         when(taxClassRepository.existsByName("Existing Class")).thenReturn(true);
 
         assertThrows(DuplicatedException.class, () -> taxClassService.create(postVm));
@@ -101,7 +101,7 @@ class TaxClassServiceTest {
         when(taxClassRepository.findById(1L)).thenReturn(Optional.of(taxClass));
         when(taxClassRepository.existsByNameNotUpdatingTaxClass("New Class", 1L)).thenReturn(false);
 
-        TaxClassPostVm postVm = new TaxClassPostVm("New Class");
+        TaxClassPostVm postVm = new TaxClassPostVm("new-class", "New Class");
         taxClassService.update(postVm, 1L);
 
         assertThat(taxClass.getName()).isEqualTo("New Class");
@@ -117,7 +117,7 @@ class TaxClassServiceTest {
         when(taxClassRepository.findById(1L)).thenReturn(Optional.of(taxClass));
         when(taxClassRepository.existsByNameNotUpdatingTaxClass("New Class", 1L)).thenReturn(true);
 
-        TaxClassPostVm postVm = new TaxClassPostVm("New Class");
+        TaxClassPostVm postVm = new TaxClassPostVm("new-class", "New Class");
         assertThrows(DuplicatedException.class, () -> taxClassService.update(postVm, 1L));
     }
 
@@ -125,7 +125,7 @@ class TaxClassServiceTest {
     void update_whenNotExists_shouldThrowNotFoundException() {
         when(taxClassRepository.findById(1L)).thenReturn(Optional.empty());
 
-        TaxClassPostVm postVm = new TaxClassPostVm("New Class");
+        TaxClassPostVm postVm = new TaxClassPostVm("new-class", "New Class");
         assertThrows(NotFoundException.class, () -> taxClassService.update(postVm, 1L));
     }
 
@@ -156,7 +156,7 @@ class TaxClassServiceTest {
 
         TaxClassListGetVm result = taxClassService.getPageableTaxClasses(0, 10);
 
-        assertThat(result.taxClassVms()).hasSize(1);
+        assertThat(result.taxClassContent()).hasSize(1);
         assertThat(result.totalElements()).isEqualTo(1);
         assertThat(result.totalPages()).isEqualTo(1);
     }

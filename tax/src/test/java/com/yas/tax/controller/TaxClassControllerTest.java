@@ -21,19 +21,23 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.security.oauth2.server.resource.autoconfigure.servlet.OAuth2ResourceServerAutoConfiguration;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import tools.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-@WebMvcTest(controllers = TaxClassController.class, excludeAutoConfiguration = org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration.class)
+@WebMvcTest(controllers = TaxClassController.class,
+    excludeAutoConfiguration = OAuth2ResourceServerAutoConfiguration.class)
+@AutoConfigureMockMvc(addFilters = false)
 class TaxClassControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @MockitoBean
     private TaxClassService taxClassService;
 
     private ObjectMapper objectMapper;
@@ -74,7 +78,7 @@ class TaxClassControllerTest {
 
     @Test
     void createTaxClass_shouldReturnCreated() throws Exception {
-        TaxClassPostVm postVm = new TaxClassPostVm("New Class");
+        TaxClassPostVm postVm = new TaxClassPostVm("new-class", "New Class");
         TaxClass taxClass = new TaxClass();
         taxClass.setId(1L);
         taxClass.setName("New Class");
@@ -88,7 +92,7 @@ class TaxClassControllerTest {
 
     @Test
     void updateTaxClass_shouldReturnNoContent() throws Exception {
-        TaxClassPostVm postVm = new TaxClassPostVm("Updated Class");
+        TaxClassPostVm postVm = new TaxClassPostVm("updated-class", "Updated Class");
         doNothing().when(taxClassService).update(any(TaxClassPostVm.class), anyLong());
 
         mockMvc.perform(put("/backoffice/tax-classes/1")

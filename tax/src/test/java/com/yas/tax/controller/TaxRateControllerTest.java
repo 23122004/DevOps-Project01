@@ -21,19 +21,23 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.security.oauth2.server.resource.autoconfigure.servlet.OAuth2ResourceServerAutoConfiguration;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import tools.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-@WebMvcTest(controllers = TaxRateController.class, excludeAutoConfiguration = org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration.class)
+@WebMvcTest(controllers = TaxRateController.class,
+    excludeAutoConfiguration = OAuth2ResourceServerAutoConfiguration.class)
+@AutoConfigureMockMvc(addFilters = false)
 class TaxRateControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @MockitoBean
     private TaxRateService taxRateService;
 
     private ObjectMapper objectMapper;
@@ -54,7 +58,7 @@ class TaxRateControllerTest {
 
     @Test
     void getTaxRate_shouldReturnTaxRate() throws Exception {
-        TaxRateVm vm = new TaxRateVm(1L, 10.0, 1L, null, null, null, null);
+        TaxRateVm vm = new TaxRateVm(1L, 10.0, null, 1L, null, null);
         when(taxRateService.findById(1L)).thenReturn(vm);
 
         mockMvc.perform(get("/backoffice/tax-rates/1"))
@@ -63,10 +67,15 @@ class TaxRateControllerTest {
 
     @Test
     void createTaxRate_shouldReturnCreated() throws Exception {
-        TaxRatePostVm postVm = new TaxRatePostVm(10.0, 1L, 1L, 1L, "Zip", "Name");
+        TaxRatePostVm postVm = new TaxRatePostVm(10.0, "Zip", 1L, 1L, 1L);
+        com.yas.tax.model.TaxClass taxClass = new com.yas.tax.model.TaxClass();
+        taxClass.setId(1L);
+        taxClass.setName("Standard");
         TaxRate taxRate = new TaxRate();
         taxRate.setId(1L);
-        when(taxRateService.create(any(TaxRatePostVm.class))).thenReturn(taxRate);
+        taxRate.setRate(10.0);
+        taxRate.setTaxClass(taxClass);
+        when(taxRateService.createTaxRate(any(TaxRatePostVm.class))).thenReturn(taxRate);
 
         mockMvc.perform(post("/backoffice/tax-rates")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -76,8 +85,8 @@ class TaxRateControllerTest {
 
     @Test
     void updateTaxRate_shouldReturnNoContent() throws Exception {
-        TaxRatePostVm postVm = new TaxRatePostVm(10.0, 1L, 1L, 1L, "Zip", "Name");
-        doNothing().when(taxRateService).update(any(TaxRatePostVm.class), anyLong());
+        TaxRatePostVm postVm = new TaxRatePostVm(10.0, "Zip", 1L, 1L, 1L);
+        doNothing().when(taxRateService).updateTaxRate(any(TaxRatePostVm.class), anyLong());
 
         mockMvc.perform(put("/backoffice/tax-rates/1")
                 .contentType(MediaType.APPLICATION_JSON)

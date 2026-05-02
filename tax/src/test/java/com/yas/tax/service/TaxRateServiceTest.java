@@ -37,7 +37,7 @@ class TaxRateServiceTest {
         taxRateRepository = mock(TaxRateRepository.class);
         locationService = mock(LocationService.class);
         taxClassRepository = mock(TaxClassRepository.class);
-        taxRateService = new TaxRateService(taxRateRepository, locationService, taxClassRepository);
+        taxRateService = new TaxRateService(locationService, taxRateRepository, taxClassRepository);
     }
 
     @Test
@@ -82,15 +82,15 @@ class TaxRateServiceTest {
         TaxClass taxClass = new TaxClass();
         taxClass.setId(1L);
         taxClass.setName("Class");
-        when(taxClassRepository.findById(1L)).thenReturn(Optional.of(taxClass));
+        when(taxClassRepository.existsById(1L)).thenReturn(true);
         
         TaxRate taxRate = new TaxRate();
         taxRate.setId(1L);
         taxRate.setTaxClass(taxClass);
         when(taxRateRepository.save(any(TaxRate.class))).thenReturn(taxRate);
 
-        TaxRatePostVm postVm = new TaxRatePostVm(10.0, 1L, 1L, 1L, "Zip", "Name");
-        TaxRate result = taxRateService.create(postVm);
+        TaxRatePostVm postVm = new TaxRatePostVm(10.0, "Zip", 1L, 1L, 1L);
+        TaxRate result = taxRateService.createTaxRate(postVm);
 
         assertThat(result).isNotNull();
         verify(taxRateRepository).save(any(TaxRate.class));
@@ -99,9 +99,9 @@ class TaxRateServiceTest {
     @Test
     void create_whenTaxClassNotExists_shouldThrowNotFoundException() {
         when(taxClassRepository.findById(1L)).thenReturn(Optional.empty());
-        TaxRatePostVm postVm = new TaxRatePostVm(10.0, 1L, 1L, 1L, "Zip", "Name");
+        TaxRatePostVm postVm = new TaxRatePostVm(10.0, "Zip", 1L, 1L, 1L);
 
-        assertThrows(NotFoundException.class, () -> taxRateService.create(postVm));
+        assertThrows(NotFoundException.class, () -> taxRateService.createTaxRate(postVm));
     }
 
     @Test
@@ -115,10 +115,10 @@ class TaxRateServiceTest {
         taxRate.setTaxClass(taxClass);
 
         when(taxRateRepository.findById(1L)).thenReturn(Optional.of(taxRate));
-        when(taxClassRepository.findById(1L)).thenReturn(Optional.of(taxClass));
+        when(taxClassRepository.existsById(1L)).thenReturn(true);
 
-        TaxRatePostVm postVm = new TaxRatePostVm(15.0, 1L, 1L, 1L, "Zip", "Name");
-        taxRateService.update(postVm, 1L);
+        TaxRatePostVm postVm = new TaxRatePostVm(15.0, "Zip", 1L, 1L, 1L);
+        taxRateService.updateTaxRate(postVm, 1L);
 
         assertThat(taxRate.getRate()).isEqualTo(15.0);
         verify(taxRateRepository).save(taxRate);
@@ -128,8 +128,8 @@ class TaxRateServiceTest {
     void update_whenTaxRateNotExists_shouldThrowNotFoundException() {
         when(taxRateRepository.findById(1L)).thenReturn(Optional.empty());
 
-        TaxRatePostVm postVm = new TaxRatePostVm(15.0, 1L, 1L, 1L, "Zip", "Name");
-        assertThrows(NotFoundException.class, () -> taxRateService.update(postVm, 1L));
+        TaxRatePostVm postVm = new TaxRatePostVm(15.0, "Zip", 1L, 1L, 1L);
+        assertThrows(NotFoundException.class, () -> taxRateService.updateTaxRate(postVm, 1L));
     }
 
     @Test
@@ -167,7 +167,7 @@ class TaxRateServiceTest {
 
         TaxRateListGetVm result = taxRateService.getPageableTaxRates(0, 10);
 
-        assertThat(result.taxRateVms()).hasSize(1);
+        assertThat(result.taxRateGetDetailContent()).hasSize(1);
         assertThat(result.totalElements()).isEqualTo(1);
     }
 }
