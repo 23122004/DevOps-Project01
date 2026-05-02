@@ -30,6 +30,7 @@ import com.yas.webhook.repository.EventRepository;
 import com.yas.webhook.repository.WebhookEventRepository;
 import com.yas.webhook.repository.WebhookRepository;
 import com.yas.webhook.model.Event;
+import com.yas.webhook.model.enums.EventName;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -82,7 +83,14 @@ class WebhookServiceTest {
         Page<Webhook> page = new PageImpl<>(List.of(webhook));
         when(webhookRepository.findAll(any(PageRequest.class))).thenReturn(page);
         
-        WebhookListGetVm expectedVm = new WebhookListGetVm(List.of(), 0, 10, 0, 0, true);
+        WebhookListGetVm expectedVm = WebhookListGetVm.builder()
+                .webhooks(List.of())
+                .pageNo(0)
+                .pageSize(10)
+                .totalElements(0)
+                .totalPages(0)
+                .isLast(true)
+                .build();
         when(webhookMapper.toWebhookListGetVm(page, 0, 10)).thenReturn(expectedVm);
 
         WebhookListGetVm result = webhookService.getPageableWebhooks(0, 10);
@@ -94,7 +102,9 @@ class WebhookServiceTest {
     void findAllWebhooks_shouldReturnList() {
         Webhook webhook = new Webhook();
         when(webhookRepository.findAll(any(Sort.class))).thenReturn(List.of(webhook));
-        when(webhookMapper.toWebhookVm(any())).thenReturn(new WebhookVm(1L, ""));
+        WebhookVm webhookVm = new WebhookVm();
+        webhookVm.setId(1L);
+        when(webhookMapper.toWebhookVm(any())).thenReturn(webhookVm);
 
         List<WebhookVm> result = webhookService.findAllWebhooks();
         
@@ -105,7 +115,9 @@ class WebhookServiceTest {
     void findById_whenExists_shouldReturnWebhook() {
         Webhook webhook = new Webhook();
         when(webhookRepository.findById(1L)).thenReturn(Optional.of(webhook));
-        when(webhookMapper.toWebhookDetailVm(webhook)).thenReturn(new WebhookDetailVm(1L, "", "", "", true, List.of()));
+        WebhookDetailVm detailVm = new WebhookDetailVm();
+        detailVm.setId(1L);
+        when(webhookMapper.toWebhookDetailVm(webhook)).thenReturn(detailVm);
 
         WebhookDetailVm result = webhookService.findById(1L);
         
@@ -121,7 +133,7 @@ class WebhookServiceTest {
 
     @Test
     void create_shouldSaveAndReturnWebhook() {
-        WebhookPostVm postVm = new WebhookPostVm("url", "secret", "secret", true, List.of(new EventVm(1L, "EVENT")));
+        WebhookPostVm postVm = new WebhookPostVm("url", "secret", "secret", true, List.of(new EventVm(1L, EventName.ON_ORDER_CREATED)));
         Webhook webhook = new Webhook();
         webhook.setId(1L);
         when(webhookMapper.toCreatedWebhook(postVm)).thenReturn(webhook);
@@ -131,7 +143,8 @@ class WebhookServiceTest {
         event.setId(1L);
         when(eventRepository.findById(1L)).thenReturn(Optional.of(event));
         
-        WebhookDetailVm expectedVm = new WebhookDetailVm(1L, "", "", "", true, List.of());
+        WebhookDetailVm expectedVm = new WebhookDetailVm();
+        expectedVm.setId(1L);
         when(webhookMapper.toWebhookDetailVm(webhook)).thenReturn(expectedVm);
 
         WebhookDetailVm result = webhookService.create(postVm);
@@ -142,7 +155,7 @@ class WebhookServiceTest {
 
     @Test
     void update_whenExists_shouldUpdateAndSave() {
-        WebhookPostVm postVm = new WebhookPostVm("url", "secret", "secret", true, List.of(new EventVm(1L, "EVENT")));
+        WebhookPostVm postVm = new WebhookPostVm("url", "secret", "secret", true, List.of(new EventVm(1L, EventName.ON_ORDER_CREATED)));
         Webhook existingWebhook = new Webhook();
         existingWebhook.setWebhookEvents(List.of());
         when(webhookRepository.findById(1L)).thenReturn(Optional.of(existingWebhook));

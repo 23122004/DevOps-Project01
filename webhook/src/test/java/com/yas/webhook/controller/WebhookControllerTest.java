@@ -21,19 +21,23 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.security.oauth2.server.resource.autoconfigure.servlet.OAuth2ResourceServerAutoConfiguration;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import tools.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-@WebMvcTest(controllers = WebhookController.class, excludeAutoConfiguration = org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration.class)
+@WebMvcTest(controllers = WebhookController.class,
+    excludeAutoConfiguration = OAuth2ResourceServerAutoConfiguration.class)
+@AutoConfigureMockMvc(addFilters = false)
 class WebhookControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @MockitoBean
     private WebhookService webhookService;
 
     private ObjectMapper objectMapper;
@@ -45,7 +49,14 @@ class WebhookControllerTest {
 
     @Test
     void getPageableWebhooks_shouldReturnPage() throws Exception {
-        WebhookListGetVm response = new WebhookListGetVm(List.of(), 0, 10, 0, 0, true);
+        WebhookListGetVm response = WebhookListGetVm.builder()
+                .webhooks(List.of())
+                .pageNo(0)
+                .pageSize(10)
+                .totalElements(0)
+                .totalPages(0)
+                .isLast(true)
+                .build();
         when(webhookService.getPageableWebhooks(anyInt(), anyInt())).thenReturn(response);
 
         mockMvc.perform(get("/backoffice/webhooks/paging"))
@@ -54,7 +65,8 @@ class WebhookControllerTest {
 
     @Test
     void listWebhooks_shouldReturnList() throws Exception {
-        WebhookVm vm = new WebhookVm(1L, "http://localhost");
+        WebhookVm vm = new WebhookVm();
+        vm.setPayloadUrl("http://localhost");
         when(webhookService.findAllWebhooks()).thenReturn(List.of(vm));
 
         mockMvc.perform(get("/backoffice/webhooks"))
@@ -64,7 +76,8 @@ class WebhookControllerTest {
 
     @Test
     void getWebhook_shouldReturnWebhook() throws Exception {
-        WebhookDetailVm vm = new WebhookDetailVm(1L, "http://localhost", "secret", "secret", true, List.of());
+        WebhookDetailVm vm = new WebhookDetailVm();
+        vm.setPayloadUrl("http://localhost");
         when(webhookService.findById(1L)).thenReturn(vm);
 
         mockMvc.perform(get("/backoffice/webhooks/1"))
@@ -75,7 +88,8 @@ class WebhookControllerTest {
     @Test
     void createWebhook_shouldReturnCreated() throws Exception {
         WebhookPostVm postVm = new WebhookPostVm("http://localhost", "secret", "secret", true, List.of());
-        WebhookDetailVm vm = new WebhookDetailVm(1L, "http://localhost", "secret", "secret", true, List.of());
+        WebhookDetailVm vm = new WebhookDetailVm();
+        vm.setId(1L);
         when(webhookService.create(any(WebhookPostVm.class))).thenReturn(vm);
 
         mockMvc.perform(post("/backoffice/webhooks")
