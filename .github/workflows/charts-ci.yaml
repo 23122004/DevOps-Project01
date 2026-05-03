@@ -2,13 +2,40 @@ name: release charts ci
 
 on:
   push:
-    branches: [ "main" ]
     paths:
       - "k8s/charts/**"
       - ".github/workflows/charts-ci.yaml"
+  pull_request:
+    paths:
+      - "k8s/charts/**"
+      - ".github/workflows/charts-ci.yaml"
+  workflow_dispatch:
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Helm
+        uses: azure/setup-helm@v3.5
+
+      - name: Helm lint
+        run: |
+          set -e
+          for chart_dir in k8s/charts/*/; do
+            if [ -f "${chart_dir}Chart.yaml" ]; then
+              echo "Linting ${chart_dir}"
+              helm lint "${chart_dir}"
+            fi
+          done
+
   release-charts:
+    needs: lint
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     permissions:
       contents: write
     runs-on: ubuntu-latest
